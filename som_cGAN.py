@@ -16,6 +16,8 @@ import glob
 from PIL import Image
 import numpy as np
 
+import itertools
+
 real_list = []
 fake_list = []
 #store name files 
@@ -225,23 +227,6 @@ def compare(real, fake):
    
    return res
 
-def convert_to_bitmask(int_array):
-   '''Convert the integer array into a binary matrix with one row for each cluster, 
-   indicating which element belongs to the specific cluster
-   E.g. [0,1,1,2] -> [[1. 0. 0. 0.]
-                      [0. 1. 1. 0.]
-                      [0. 0. 0. 1.]]'''
-   n_clusters = len(set(int_array))
-   array_len = len(int_array)
-   res = np.zeros((n_clusters, array_len))
-
-   for c in range(0, n_clusters):
-     mask = (np.array(int_array) == c).astype(int)
-     res[c] = mask
-
-   return res 
-
-import itertools
 
 def compare_2(real_d, fake_d):
    '''Compare assignments by couples.
