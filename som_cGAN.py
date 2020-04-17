@@ -225,7 +225,66 @@ def compare(real, fake):
    
    return res
 
+def convert_to_bitmask(int_array):
+   '''Convert the integer array into a binary matrix with one row for each cluster, 
+   indicating which element belongs to the specific cluster
+   E.g. [0,1,1,2] -> [[1. 0. 0. 0.]
+                      [0. 1. 1. 0.]
+                      [0. 0. 0. 1.]]'''
+   n_clusters = len(set(int_array))
+   array_len = len(int_array)
+   res = np.zeros((n_clusters, array_len))
+
+   for c in range(0, n_clusters):
+     mask = (np.array(int_array) == c).astype(int)
+     res[c] = mask
+
+   return res 
+
+import itertools
+
+def compare_2(real_d, fake_d):
+   '''Compare assignments by couples.
+   Returns:
+   - same_el_per_centroid = number of couples that have the same assignment in the real and fake domain;
+                        the result is a vector: couples are grouped by real centroid. In other words, 
+                        each cell of this array is the number of couples that have real image in that group, and have the same assignment for the fake domain
+   - num_el_per_centroid = number of images grouped in this centroid'''
+   #this eliminates duplicates
+   real_d.sort()
+   real = list(real_d for real_d,_ in itertools.groupby(real_d))
+   fake_d.sort()
+   fake = list(fake_d for fake_d,_ in itertools.groupby(fake_d))
    
+   same_el_per_centroid = np.zeros(len(real))
+   num_el_per_centroid = np.zeros(len(real))
+
+   for i in range(0, len(real)):
+     num_el_per_centroid[i] = len(real[i])
+     for j in range(0, len(fake)):
+       s1 = set(real[i])
+       s2 = set(fake[j]) 
+       score =  len(s1.intersection(s2)) if  (len(s1.intersection(s2)) > 1) else 0 # increment the score only if there is more than one match between the two sets
+       same_el_per_centroid[i] += score 
+
+   return same_el_per_centroid, num_el_per_centroid
+
+def compare_aggr(same_el_per_centroid, num_el_per_centroid):
+   '''Aggregate the result from  compare_2().
+   Returns the number of couples that are grouped together over the total number. [value between 0 and 1]
+   Takes out from the computation the couples that are clustered alone, since their score is 0 but they cannot have more.'''
+   tot = 0
+   n_el = 0
+   print(num_el_per_centroid)
+
+   for i in range(0, len(same_el_per_centroid)):
+     if num_el_per_centroid[i] > 1: # exclude groups with only one element (their score is 0 but it's not meaningful)
+       tot += same_el_per_centroid[i]
+       n_el += num_el_per_centroid[i]
+   return (float(tot) / n_el)
+
+
+
 read_data() 
    
 #domain B
@@ -261,18 +320,25 @@ iteration = 100
 
 groups_real = real_data()
 groups_fake = fake_data()
+print(groups_real)
+print(groups_fake)
 
 comparison = compare(groups_real, groups_fake)
+same_el_per_centroid, num_el_per_centroid = compare_2(groups_real, groups_fake)
+comparison_2 = compare_aggr(same_el_per_centroid, num_el_per_centroid)
 
 print("mean Jaccard similiarity: " + str(statistics.mean(comparison)))
 print("median Jaccard similiarity: " + str(statistics.median(comparison)))
 #print("mode Jaccard similiarity: " + str(statistics.mode(res)))
+print("Number of elements with the same assignment in the fake domain, for each centroid: "+ str(same_el_per_centroid))
+print("Number of elements in each real centroid: "+str(num_el_per_centroid))
+print("Computed score: "+ str(comparison_2))
 
-f = open(dataset +"_results.txt", "w")
-f.write("mean Jaccard similiarity: " + str(statistics.mean(comparison)))
-f.write("median Jaccard similiarity: " + str(statistics.median(comparison)))
-f.write(str(sum) +  " pairs were grouped together out of " + str(int(size/2)))
-f.close()
+#f = open(dataset +"_results.txt", "w")
+#f.write("mean Jaccard similiarity: " + str(statistics.mean(comparison)))
+#f.write("median Jaccard similiarity: " + str(statistics.median(comparison)))
+#f.write(str(sum) +  " pairs were grouped together out of " + str(int(size/2)))
+#f.close()
 
 res = combined_data()
 
@@ -287,6 +353,7 @@ print(str(sum) +  " pairs were grouped together out of " + str(int(size/2)))
     
 
 f = open(dataset +"_results.txt", "w")
+print(dataset +"_results.txt")
 f.write("mean Jaccard similiarity: " + str(statistics.mean(comparison)) + "\n")
 f.write("median Jaccard similiarity: " + str(statistics.median(comparison)) + "\n")
 f.write(str(sum) +  " pairs were grouped together out of " + str(int(size/2)) + "\n")
