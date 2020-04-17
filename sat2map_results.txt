@@ -1,0 +1,3 @@
+mean Jaccard similiarity: 0.25816762826545436
+median Jaccard similiarity: 0.16666666666666666
+0 pairs were grouped together out of 50
