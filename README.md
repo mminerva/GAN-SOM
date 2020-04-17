@@ -40,3 +40,15 @@ Variables that can be played around:
 - number of iterations (currently equals the number of images in set)
 - other metrics of comparison of results
 - other SOM training stuff (like type of neighbourhood function and size of neighbourhood)
+
+## Evaluation
+
+Possible evaluations to show in the wiki page (add new ideas to this list):
+1. Compare the number of clusters for the 3 different cases (real - fake - mix)
+2. Compare/show the location of clusters for the 3 different cases (real - fake - mix), to see how it changes
+3. Number of couples that are clustered together both in the real and in the fake domain -> for this I suggest to use the metric I proposed (count the number of couple in each real cluster that are grouped together again in the fake domain), but there might be a smarter way
+4. Number of images clustered together in the mix set:
+    1. that belong to the same couple -> this will tell us if couples get clustered together
+    2. that belong to the same set (real - fake) -> this will tell us whether SOM is able to group real and fake images separately
+
+Since we have multiple datasets to test, in the wiki page we can visually compare these evaluations across the datasets. For instance we can make an histogram showing the results of point 1. in the different datasets.
