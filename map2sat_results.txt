@@ -1,3 +1,7 @@
-mean Jaccard similiarity: 0.2159393906746848
-median Jaccard similiarity: 0.14285714285714285
-13 pairs were grouped together out of 50
+real SOM has 23 clusters
+real SOM has 21 clusters
+combined SOM has 25 clusters
+mean Jaccard similiarity: 0.03257309941520468
+median Jaccard similiarity: 0.0
+mean Jaccard similiarity of clusters: 0.2665480157807523median Jaccard similiarity of clusters: 0.1666666666666666611 pairs were grouped together out of 50
+There are 9 real image only clustersThere are 6 fake image only clusters
