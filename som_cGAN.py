@@ -461,8 +461,6 @@ print("There are " + str(len(fake_clusters)) + " fake image only clusters")
 
 
 #additional metric
-#print(clusters_real)
-#print(clusters_fake)
 same_el_per_centroid, num_el_per_centroid = compare_2(clusters_real, clusters_fake)
 comparison_2 = compare_aggr(same_el_per_centroid, num_el_per_centroid)
 
