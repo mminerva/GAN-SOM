@@ -328,7 +328,7 @@ def compare_aggr(same_el_per_centroid, num_el_per_centroid):
    Takes out from the computation the couples that are clustered alone, since their score is 0 but they cannot have more.'''
    tot = 0
    n_el = 0
-   print(num_el_per_centroid)
+   #print(num_el_per_centroid)
 
    for i in range(0, len(same_el_per_centroid)):
      if num_el_per_centroid[i] > 1: # exclude groups with only one element (their score is 0 but it's not meaningful)
@@ -402,13 +402,6 @@ comparison = compare(groups_real, groups_fake)
 #this meausures how similar are the clusters between the two mappings
 cluster_comparison = compare_clusters(clusters_real, clusters_fake)
 
-#same_el_per_centroid, num_el_per_centroid = compare_2(groups_real, groups_fake)
-#comparison_2 = compare_aggr(same_el_per_centroid, num_el_per_centroid)
-
-
-#print("Number of elements with the same assignment in the fake domain, for each centroid: "+ str(same_el_per_centroid))
-#print("Number of elements in each real centroid: "+str(num_el_per_centroid))
-#print("Computed score: "+ str(comparison_2))
 
 #print results of the metrics
 #print(groups_real)
@@ -465,7 +458,19 @@ for i in range(0, len(clusters)):
       
 print("There are " + str(len(real_clusters)) + " real image only clusters")
 print("There are " + str(len(fake_clusters)) + " fake image only clusters")
+
+
+#additional metric
+#print(clusters_real)
+#print(clusters_fake)
+same_el_per_centroid, num_el_per_centroid = compare_2(clusters_real, clusters_fake)
+comparison_2 = compare_aggr(same_el_per_centroid, num_el_per_centroid)
+
+print("\nNumber of elements with the same assignment in the fake domain, for each centroid: "+ str(same_el_per_centroid))
+print("Number of elements in each real centroid: "+str(num_el_per_centroid))
+print("Computed score: "+ str(comparison_2))
     
+
 
 #save results
 f = open(dataset +"_results.txt", "w")
