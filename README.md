@@ -40,3 +40,28 @@ Variables that can be played around:
 - number of iterations (currently equals the number of images in set)
 - other metrics of comparison of results
 - other SOM training stuff (like type of neighbourhood function and size of neighbourhood)
+
+
+## Evaluation
+
+Possible evaluations to show in the wiki page (add new ideas to this list):
+1. Compare the number of clusters for the 3 different cases (real - fake - mix)
+DONE. you can see this in the results files
+
+2. Compare/show the location of clusters for the 3 different cases (real - fake - mix), to see how it changes
+PENDING. A little complicated to do, maybe if we have time.
+
+3. Number of couples that are clustered together both in the real and in the fake domain -> for this I suggest to use the metric I proposed (count the number of couple in each real cluster that are grouped together again in the fake domain), but there might be a smarter way
+This is somewhat captured by the Jaccard similiarity metrics.
+Jaccard similiarity for images measures how similar the groupings for each image are in the fake domain vs the real domain.
+Jaccard similiarity of clusters measures how similar the clusters are between the fake and real domains. 
+Not sure if these are enough to capture what you mean. Your added code should use the clusters_fake and clusters_real now. They are vectors of image indexes for each cluster, only containing unique elements. 
+
+4. Number of images clustered together in the mix set:
+    1. that belong to the same couple -> this will tell us if couples get clustered together
+    DONE. See the results files.
+    2. that belong to the same set (real - fake) -> this will tell us whether SOM is able to group real and fake images separately
+    Not sure if this is enough but so far I have added the number of clusters that have solely real images and number of clusters that have solely fake images. 
+
+Since we have multiple datasets to test, in the wiki page we can visually compare these evaluations across the datasets. For instance we can make an histogram showing the results of point 1. in the different datasets.
+
