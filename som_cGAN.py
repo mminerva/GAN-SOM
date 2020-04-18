@@ -7,6 +7,8 @@ Created on Fri Apr 10 12:28:35 2020
 
 from minisom import MiniSom  
 
+import itertools
+
 import matplotlib.pyplot as plt
 
 import statistics
@@ -16,8 +18,7 @@ import glob
 from PIL import Image
 import numpy as np
 
-import itertools
-
+#holders for datasets
 real_list = []
 fake_list = []
 #store name files 
@@ -26,17 +27,20 @@ legend_real = []
 
 #ONLY THING YOU NEED TO CHANGE IS THE DATASET NAME TO RUN ON OTHER DATASET
 
-#dataset = "edges2shoes"
+dataset = "edges2shoes"
 #dataset = "facades_label2photo"
 #dataset = "day2night"
 #dataset = "map2sat"
-dataset = "sat2map"
+#dataset = "sat2map"
 path = "cGAN_results/" + dataset + "_pretrained/test_latest/images/*.png"
 #dataset = "horse2zebra/*.png"
 
 
 
 def read_data():
+   #reads in data from the defined path, stores image data in real_list and fake_list depending on image name
+   #stores the image name in corresponding legend
+   #images are read in order, so the fake-real pairs are in same order in their corresponding lists
    print("results for dataset " + dataset)
    for filename in glob.glob(path): 
        im=Image.open(filename)
@@ -52,6 +56,12 @@ def read_data():
          
             
 def real_data(): 
+   #performs SOM on the real data only
+   #shows and saves an image of the frequency distribution of nodes being winners
+   #results variable stores the winner coordinates for each image
+   #the winner coordinates are essentially the label of the cluster the image belongs to
+   #returns array where for each image there is a list of other images it was clustered together with in this SOM
+   
    data = real
    
    #parameter for som training is number of iterations, should be comparable to number of samples for best results
@@ -90,27 +100,46 @@ def real_data():
    
    #print(som.winner(data[1]))
    #som.labels_map(data, legend_real)
+   
+   #collect winner coordinates for each image
    results = []
    size = len(data)
    
    for i in range(0,size):
       results.append(som.winner(data[i]))
+      
+   #count number of clusters
+   clusters = []
+   for i in range(0, iteration):
+      clusters.append([])
+      for j in range(0, iteration):
+         if results[i]==results[j]:
+            clusters[i].append(j)
+            
+   n = len(np.unique(clusters))
 
+
+   #collect the image indexes for which images each image was grouped for, except for itself
    pairs = []
    for i in range(0, size):
       pairs.append([])
       for j in range(0, size):
-         if results[i]==results[j]:
-            pairs[i].append(j)
+         if not(i==j):
+            if results[i]==results[j]:
+               pairs[i].append(j)
 
-   return pairs
+   return pairs, n, np.unique(clusters)
 
 #figure out runtime error for quan error
-#better code structure for more tests
-#saving results
 #same initial weights??
    
 def fake_data():
+   #performs SOM on the fake data only
+   #shows and saves an image of the frequency distribution of nodes being winners
+   #results variable stores the winner coordinates for each image
+   #the winner coordinates are essentially the label of the cluster the image belongs to
+   #returns array where for each image there is a list of other images it was clustered together with in this SOM
+   
    data = fake
    
    #parameter for som training is number of iterations, should be comparable to number of samples for best results
@@ -151,22 +180,43 @@ def fake_data():
    
    #print(som.winner(data[1]))
    #som.labels_map(data, legend_fake)
+   
+   #collect winner coordinates for each image
    results = []
    size = len(data)
    
    for i in range(0,size):
       results.append(som.winner(data[i]))
+      
+      
+      #count number of clusters
+   clusters = []
+   for i in range(0, iteration):
+      clusters.append([])
+      for j in range(0, iteration):
+         if results[i]==results[j]:
+            clusters[i].append(j)
+            
+   n = len(np.unique(clusters))
 
+
+   #collect the image indexes for which images each image was grouped for, except for itself
    pairs = []
    for i in range(0, size):
       pairs.append([])
       for j in range(0, size):
-         if results[i]==results[j]:
-            pairs[i].append(j)
+         if not(i==j):
+            if results[i]==results[j]:
+               pairs[i].append(j)
 
-   return pairs
+   return pairs, n, np.unique(clusters)
 
 def combined_data():
+   #performs SOM on the combined data
+   #shows and saves an image of the frequency distribution of nodes being winners
+   #results variable stores the winner coordinates for each image
+   #the winner coordinates are essentially the label of the cluster the image belongs to
+   #returns array where for each image there is a list of other images it was clustered together with in this SOM
    data = all_list
    
    #parameter for som training is number of iterations, should be comparable to number of samples for best results
@@ -204,29 +254,47 @@ def combined_data():
    
    #print(som.winner(data[1]))
    
+   #collect winner coordinates for each image
    results = []
    
    for i in range(0,iteration):
       results.append(som.winner(data[i]))
+      
+   #count number of clusters
+   clusters = []
+   for i in range(0, iteration):
+      clusters.append([])
+      for j in range(0, iteration):
+         if results[i]==results[j]:
+            clusters[i].append(j)
+            
+   n = len(np.unique(clusters))
 
+
+
+   #collect the image indexes for which images each image was grouped for, except for itself
    pairs = []
    for i in range(0, iteration):
       pairs.append([])
       for j in range(0, iteration):
-         if results[i]==results[j]:
-            pairs[i].append(j)
+         if not(i==j):
+            if results[i]==results[j]:
+               pairs[i].append(j)
 
-   return pairs
+   return pairs, n, np.unique(clusters)
 
 def compare(real, fake):
+   #takes in two data sets of same size
+   #returns vector of element-wize Jaccard set similiarity
    res = []
    for i in range(0, len(real)):
       s1 = set(real[i])
       s2 = set(fake[i])
-      res.append(len(s1.intersection(s2))/len(s1.union(s2)))
+      if not(len(s1.union(s2))==0):
+         res.append(len(s1.intersection(s2))/len(s1.union(s2)))
+            
    
    return res
-
 
 def compare_2(real_d, fake_d):
    '''Compare assignments by couples.
@@ -268,8 +336,28 @@ def compare_aggr(same_el_per_centroid, num_el_per_centroid):
        n_el += num_el_per_centroid[i]
    return (float(tot) / n_el)
 
+def compare_clusters(real, fake):
+   #takes in two vectors of clusters
+   #could be different size
+   #only contain unique elements
+   #each element is itself a list of image indexes in that cluster
+   #can consider image 1 in real dataset the same as image 1 in fake dataset as they are the corresponding pair
+   
+   #need to compare all clusters with all other clusters 
+   
+   res = []
+   for i in range(0, len(real)):
+      res.append([])
+      for j in range(0, len(fake)):
+         if not(i==j):
+            s1 = set(real[i])
+            s2 = set(fake[j])
+            if not(len(s1.union(s2))==0):
+                  res[i].append(len(s1.intersection(s2))/len(s1.union(s2)))
+            
+   return res
 
-
+   
 read_data() 
    
 #domain B
@@ -301,31 +389,58 @@ legend.extend(legend_real)
 pixels = len(fake[1])
 #print(pixels)
 
-iteration = 100
+#iteration = 100
 
-groups_real = real_data()
-groups_fake = fake_data()
-print(groups_real)
-print(groups_fake)
+#fit real and fake datasets separately
+groups_real, nr, clusters_real  = real_data()
+groups_fake, nf, clusters_fake  = fake_data()
 
+#perform metrics on the datasets
+#this measures for each image how are its images it was paired with compares between the two mappings
 comparison = compare(groups_real, groups_fake)
-same_el_per_centroid, num_el_per_centroid = compare_2(groups_real, groups_fake)
-comparison_2 = compare_aggr(same_el_per_centroid, num_el_per_centroid)
 
-print("mean Jaccard similiarity: " + str(statistics.mean(comparison)))
-print("median Jaccard similiarity: " + str(statistics.median(comparison)))
+#this meausures how similar are the clusters between the two mappings
+cluster_comparison = compare_clusters(clusters_real, clusters_fake)
+
+#same_el_per_centroid, num_el_per_centroid = compare_2(groups_real, groups_fake)
+#comparison_2 = compare_aggr(same_el_per_centroid, num_el_per_centroid)
+
+
+#print("Number of elements with the same assignment in the fake domain, for each centroid: "+ str(same_el_per_centroid))
+#print("Number of elements in each real centroid: "+str(num_el_per_centroid))
+#print("Computed score: "+ str(comparison_2))
+
+#print results of the metrics
+#print(groups_real)
+print("real SOM has "+ str(nr) + " clusters\n")
+#print(groups_fake)
+print("fake SOM has "+ str(nf) + " clusters\n")
+#print(clusters_real)
+#print(clusters_fake)
+#print(comparison)
+#print(cluster_comparison)
+print("mean Jaccard similiarity for images: " + str(statistics.mean(comparison)))
+print("median Jaccard similiarity for images: " + str(statistics.median(comparison)))
 #print("mode Jaccard similiarity: " + str(statistics.mode(res)))
-print("Number of elements with the same assignment in the fake domain, for each centroid: "+ str(same_el_per_centroid))
-print("Number of elements in each real centroid: "+str(num_el_per_centroid))
-print("Computed score: "+ str(comparison_2))
 
-#f = open(dataset +"_results.txt", "w")
-#f.write("mean Jaccard similiarity: " + str(statistics.mean(comparison)))
-#f.write("median Jaccard similiarity: " + str(statistics.median(comparison)))
-#f.write(str(sum) +  " pairs were grouped together out of " + str(int(size/2)))
-#f.close()
+#convolute the cluster similiarities
+cluster_averages = []
+for i in range(0, len(cluster_comparison)):
+   cluster_averages.append(max(cluster_comparison[i]))
+   
+#print(cluster_averages)
 
-res = combined_data()
+print("mean Jaccard similiarity of clusters: " + str(statistics.mean(cluster_averages)))
+print("median Jaccard similiarity of clusters: " + str(statistics.median(cluster_averages)))
+#print("mode Jaccard similiarity: " + str(statistics.mode(res)))
+
+
+#do metrics on combined dataset
+res, n, clusters = combined_data()
+
+#print(res)
+print("combined SOM has "+ str(n) + " clusters\n")
+#print(clusters)
 
 size = len(res)
 
@@ -335,13 +450,35 @@ for i in range(0, int(size/2)):
       sum = sum + 1
       
 print(str(sum) +  " pairs were grouped together out of " + str(int(size/2)))
+
+#calculate how many clusters are solely from real or from fake dataset
+fake_clusters = []
+real_clusters = []
+for i in range(0, len(clusters)):
+   if all(j >= int(size/2) for j in clusters[i]):
+      real_clusters.append(clusters[i])
+   if all(j < int(size/2) for j in clusters[i]):
+      fake_clusters.append(clusters[i])
+
+#print(real_clusters)
+#print(fake_clusters)
+      
+print("There are " + str(len(real_clusters)) + " real image only clusters")
+print("There are " + str(len(fake_clusters)) + " fake image only clusters")
     
 
+#save results
 f = open(dataset +"_results.txt", "w")
-print(dataset +"_results.txt")
+f.write("real SOM has "+ str(nr) + " clusters\n")
+f.write("real SOM has "+ str(nf) + " clusters\n")
+f.write("combined SOM has "+ str(n) + " clusters\n")
 f.write("mean Jaccard similiarity: " + str(statistics.mean(comparison)) + "\n")
 f.write("median Jaccard similiarity: " + str(statistics.median(comparison)) + "\n")
+f.write("mean Jaccard similiarity of clusters: " + str(statistics.mean(cluster_averages)))
+f.write("median Jaccard similiarity of clusters: " + str(statistics.median(cluster_averages)))
 f.write(str(sum) +  " pairs were grouped together out of " + str(int(size/2)) + "\n")
+f.write("There are " + str(len(real_clusters)) + " real image only clusters")
+f.write("There are " + str(len(fake_clusters)) + " fake image only clusters")
 f.close()   
          
 
