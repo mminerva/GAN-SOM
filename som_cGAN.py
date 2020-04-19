@@ -47,7 +47,7 @@ if dataset in ["edges2shoes", "sat2map"]:
   real_B_name = "real_A" #real images from domain B are called ...real_A...
   fake_B_name = "fake_B" #fake images from domain B are called ...fake_B...
 else:
-  #for the other datasets it's ok
+  #for other datasets names are ok
   real_A_name = "real_A"
   real_B_name = "real_B"
   fake_B_name = "fake_B"
