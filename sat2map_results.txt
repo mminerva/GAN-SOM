@@ -1,7 +1,11 @@
-real SOM has 20 clusters
-real SOM has 20 clusters
-combined SOM has 14 clusters
-mean Jaccard similiarity: 0.033549539005171165
+real SOM has 22 clusters
+real SOM has 24 clusters
+real SOM in A has 21 clusters
+combined SOM has 19 clusters
+mean Jaccard similiarity: 0.04003012898973731
 median Jaccard similiarity: 0.0
-mean Jaccard similiarity of clusters: 0.32313761323242746median Jaccard similiarity of clusters: 0.14086687306501550 pairs were grouped together out of 50
-There are 5 real image only clustersThere are 9 fake image only clusters
+mean Jaccard similiarity of clusters: 0.444389701207883median Jaccard similiarity of clusters: 0.225mean Jaccard similiarity for images (real images in A -fake in B): 0.04816714150047483median Jaccard similiarity for images (real images in A -fake in B): 0.0mean Jaccard similiarity of clusters (real images in A -fake in B): 0.31264470700560926median Jaccard similiarity of clusters (real images in A -fake in B): 0.22 pairs were grouped together out of 50
+There are 10 real image only clustersThere are 7 fake image only clusters
+Number of elements with the same assignment in the fake domain, for each centroid: [ 0. 11.  2.  0.  0.  0.  0.  0.  3.  0.  0.  0.  0.  0.  0.  0.  0.  0.
+  0.  0.  0.  0.]Number of elements in each real centroid: [ 1. 20.  3.  2.  3.  1.  1.  1.  4.  1.  2.  1.  1.  1.  1.  1.  1.  1.
+  1.  1.  1.  1.]Computed score: 0.47058823529411764

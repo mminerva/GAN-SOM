@@ -21,9 +21,11 @@ import numpy as np
 #holders for datasets
 real_list = []
 fake_list = []
+real_A_list = []
 #store name files 
 legend_fake = []
 legend_real = []
+legend_real_A = []
 
 #ONLY THING YOU NEED TO CHANGE IS THE DATASET NAME TO RUN ON OTHER DATASET
 
@@ -35,6 +37,20 @@ dataset = "edges2shoes"
 path = "cGAN_results/" + dataset + "_pretrained/test_latest/images/*.png"
 #dataset = "horse2zebra/*.png"
 
+#issue with image names
+real_A_name = ""
+real_B_name = ""
+fake_B_name = ""
+if dataset in ["edges2shoes", "sat2map"]:
+  #in these dataset, the name of images is swapped:
+  real_A_name = "real_B" #real images from domain A are called ...real_B...
+  real_B_name = "real_A" #real images from domain B are called ...real_A...
+  fake_B_name = "fake_B" #fake images from domain B are called ...fake_B...
+else:
+  #for the other datasets it's ok
+  real_A_name = "real_A"
+  real_B_name = "real_B"
+  fake_B_name = "fake_B"
 
 
 def read_data():
@@ -47,22 +63,26 @@ def read_data():
        im.load()
        data = np.asarray(im, dtype= "int32")
        filename = filename[51:-4]
-       if "real_B" in filename:
+       if real_B_name in filename:
           real_list.append(data.flatten())
           legend_real.append(filename)
-       if "fake_B" in filename:
+       if fake_B_name in filename:
          fake_list.append(data.flatten())
          legend_fake.append(filename)
+       if real_A_name in filename:
+          real_A_list.append(data.flatten())
+          legend_real_A.append(filename)
          
             
-def real_data(): 
+def real_data(used_dataset): 
+   #dataset: a dataset of real data (from domain A or B)
    #performs SOM on the real data only
    #shows and saves an image of the frequency distribution of nodes being winners
    #results variable stores the winner coordinates for each image
    #the winner coordinates are essentially the label of the cluster the image belongs to
    #returns array where for each image there is a list of other images it was clustered together with in this SOM
    
-   data = real
+   data = used_dataset
    
    #parameter for som training is number of iterations, should be comparable to number of samples for best results
    iteration = len(data)
@@ -362,17 +382,18 @@ read_data()
    
 #domain B
 fake = np.array(fake_list)
+real = np.array(real_list)
 #print(legend_fake)
 #print(len(legend_fake))
 #print(fake.shape)
    
 #domain A
-real = np.array(real_list)
+real_A = np.array(real_A_list)
 #print(legend_real)
 #print(len(legend_real))
 #print(real.shape)
    
-#combined dataset
+#combined dataset (real and fake in domain B)
 images = []
 images.extend(fake_list)
 images.extend(real_list)
@@ -392,8 +413,10 @@ pixels = len(fake[1])
 #iteration = 100
 
 #fit real and fake datasets separately
-groups_real, nr, clusters_real  = real_data()
+groups_real, nr, clusters_real  = real_data(real)
 groups_fake, nf, clusters_fake  = fake_data()
+groups_real_A, nr_A, clusters_real_A  = real_data(real_A)
+
 
 #perform metrics on the datasets
 #this measures for each image how are its images it was paired with compares between the two mappings
@@ -401,7 +424,6 @@ comparison = compare(groups_real, groups_fake)
 
 #this meausures how similar are the clusters between the two mappings
 cluster_comparison = compare_clusters(clusters_real, clusters_fake)
-
 
 #print results of the metrics
 #print(groups_real)
@@ -425,6 +447,38 @@ for i in range(0, len(cluster_comparison)):
 
 print("mean Jaccard similiarity of clusters: " + str(statistics.mean(cluster_averages)))
 print("median Jaccard similiarity of clusters: " + str(statistics.median(cluster_averages)))
+#print("mode Jaccard similiarity: " + str(statistics.mode(res)))
+
+
+#perform metrics on the datasets real A vs fake B
+#this measures for each image how are its images it was paired with compares between the two mappings
+comparison_AB = compare(groups_real_A, groups_fake)
+
+#this meausures how similar are the clusters between the two mappings
+cluster_comparison_AB = compare_clusters(clusters_real_A, clusters_fake)
+
+#print results of the metrics
+#print(groups_real)
+print("real SOM in A has "+ str(nr_A) + " clusters\n")
+#print(groups_fake)
+#print("fake SOM in B has "+ str(nf) + " clusters\n")
+#print(clusters_real)
+#print(clusters_fake)
+#print(comparison)
+#print(cluster_comparison)
+print("mean Jaccard similiarity for images (real images in A -fake in B): " + str(statistics.mean(comparison_AB)))
+print("median Jaccard similiarity for images (real images in A -fake in B): " + str(statistics.median(comparison_AB)))
+#print("mode Jaccard similiarity: " + str(statistics.mode(res)))
+
+#convolute the cluster similiarities
+cluster_averages_AB = []
+for i in range(0, len(cluster_comparison_AB)):
+   cluster_averages_AB.append(max(cluster_comparison_AB[i]))
+   
+#print(cluster_averages)
+
+print("mean Jaccard similiarity of clusters (real images in A -fake in B): " + str(statistics.mean(cluster_averages_AB)))
+print("median Jaccard similiarity of clusters (real images in A -fake in B): " + str(statistics.median(cluster_averages_AB)))
 #print("mode Jaccard similiarity: " + str(statistics.mode(res)))
 
 
@@ -474,14 +528,22 @@ print("Computed score: "+ str(comparison_2))
 f = open(dataset +"_results.txt", "w")
 f.write("real SOM has "+ str(nr) + " clusters\n")
 f.write("real SOM has "+ str(nf) + " clusters\n")
+f.write("real SOM in A has "+ str(nr_A) + " clusters\n")
 f.write("combined SOM has "+ str(n) + " clusters\n")
 f.write("mean Jaccard similiarity: " + str(statistics.mean(comparison)) + "\n")
 f.write("median Jaccard similiarity: " + str(statistics.median(comparison)) + "\n")
-f.write("mean Jaccard similiarity of clusters: " + str(statistics.mean(cluster_averages)))
-f.write("median Jaccard similiarity of clusters: " + str(statistics.median(cluster_averages)))
+f.write("mean Jaccard similiarity of clusters: " + str(statistics.mean(cluster_averages)) + "\n")
+f.write("median Jaccard similiarity of clusters: " + str(statistics.median(cluster_averages)) + "\n")
+f.write("mean Jaccard similiarity for images (real images in A -fake in B): " + str(statistics.mean(comparison_AB)) + "\n")
+f.write("median Jaccard similiarity for images (real images in A -fake in B): " + str(statistics.median(comparison_AB)) + "\n")
+f.write("mean Jaccard similiarity of clusters (real images in A -fake in B): " + str(statistics.mean(cluster_averages_AB)) + "\n")
+f.write("median Jaccard similiarity of clusters (real images in A -fake in B): " + str(statistics.median(cluster_averages_AB)) + "\n")
 f.write(str(sum) +  " pairs were grouped together out of " + str(int(size/2)) + "\n")
 f.write("There are " + str(len(real_clusters)) + " real image only clusters")
 f.write("There are " + str(len(fake_clusters)) + " fake image only clusters")
+f.write("\nNumber of elements with the same assignment in the fake domain, for each centroid: "+ str(same_el_per_centroid) + "\n")
+f.write("Number of elements in each real centroid: "+str(num_el_per_centroid) + "\n")
+f.write("Computed score: "+ str(comparison_2))
 f.close()   
          
 
