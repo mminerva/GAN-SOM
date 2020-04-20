@@ -1,9 +1,18 @@
 real SOM has 2 clusters
-real SOM has 23 clusters
-real SOM in A has 21 clusters
-combined SOM has 10 clusters
-mean Jaccard similiarity: 0.04321857410881801
-median Jaccard similiarity: 0.02564102564102564
-mean Jaccard similiarity of clusters: 0.10882352941176471median Jaccard similiarity of clusters: 0.10882352941176471mean Jaccard similiarity for images (real images in A -fake in B): 0.031746031746031744median Jaccard similiarity for images (real images in A -fake in B): 0.0mean Jaccard similiarity of clusters (real images in A -fake in B): 0.32312925170068024median Jaccard similiarity of clusters (real images in A -fake in B): 0.33333333333333330 pairs were grouped together out of 50
-There are 2 real image only clustersThere are 8 fake image only clusters
-Number of elements with the same assignment in the fake domain, for each centroid: [28.  2.]Number of elements in each real centroid: [40. 10.]Computed score: 0.6
+fake SOM has 21 clusters
+real SOM in A has 22 clusters
+combined SOM has 12 clusters
+mean Jaccard similiarity for images in domain B: 0.05831772698845869
+median Jaccard similiarity for images in domain B: 0.05128205128205128
+mean Jaccard similiarity of clusters in domain B: 0.16666666666666666
+median Jaccard similiarity of clusters in domain B: 0.16666666666666666
+mean Jaccard similiarity for images (real images in A -fake in B): 0.16741071428571427
+median Jaccard similiarity for images (real images in A -fake in B): 0.041666666666666664
+mean Jaccard similiarity of clusters (real images in A -fake in B): 0.3164141414141414
+median Jaccard similiarity of clusters (real images in A -fake in B): 0.3333333333333333
+0 pairs were grouped together out of 50
+There are 2 real image only clusters
+There are 10 fake image only clusters
+Number of elements with the same assignment in the fake domain, for each centroid: [31.  4.]
+Number of elements in each real centroid: [40. 10.]
+Computed score: 0.7

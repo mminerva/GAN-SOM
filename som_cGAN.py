@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Apr 10 12:28:35 2020
-
 @author: sveta
 """
 
@@ -29,11 +28,11 @@ legend_real_A = []
 
 #ONLY THING YOU NEED TO CHANGE IS THE DATASET NAME TO RUN ON OTHER DATASET
 
-dataset = "edges2shoes"
+#dataset = "edges2shoes"
 #dataset = "facades_label2photo"
 #dataset = "day2night"
 #dataset = "map2sat"
-#dataset = "sat2map"
+dataset = "sat2map"
 path = "cGAN_results/" + dataset + "_pretrained/test_latest/images/*.png"
 #dataset = "horse2zebra/*.png"
 
@@ -321,7 +320,8 @@ def compare_2(real_d, fake_d):
    Returns:
    - same_el_per_centroid = number of couples that have the same assignment in the real and fake domain;
                         the result is a vector: couples are grouped by real centroid. In other words, 
-                        each cell of this array is the number of couples that have real image in that group, and have the same assignment for the fake domain
+                        each cell of this array is the number of couples that have real image in that group, 
+                        and have the same assignment for the fake domain
    - num_el_per_centroid = number of images grouped in this centroid'''
    #this eliminates duplicates
    real_d.sort()
@@ -337,7 +337,8 @@ def compare_2(real_d, fake_d):
      for j in range(0, len(fake)):
        s1 = set(real[i])
        s2 = set(fake[j]) 
-       score =  len(s1.intersection(s2)) if  (len(s1.intersection(s2)) > 1) else 0 # increment the score only if there is more than one match between the two sets
+       score =  len(s1.intersection(s2)) if  (len(s1.intersection(s2)) > 1) else 0
+       # increment the score only if there is more than one match between the two sets
        same_el_per_centroid[i] += score 
 
    return same_el_per_centroid, num_el_per_centroid
@@ -527,24 +528,24 @@ print("Computed score: "+ str(comparison_2))
 #save results
 f = open(dataset +"_results.txt", "w")
 f.write("real SOM has "+ str(nr) + " clusters\n")
-f.write("real SOM has "+ str(nf) + " clusters\n")
+f.write("fake SOM has "+ str(nf) + " clusters\n")
 f.write("real SOM in A has "+ str(nr_A) + " clusters\n")
 f.write("combined SOM has "+ str(n) + " clusters\n")
-f.write("mean Jaccard similiarity: " + str(statistics.mean(comparison)) + "\n")
-f.write("median Jaccard similiarity: " + str(statistics.median(comparison)) + "\n")
-f.write("mean Jaccard similiarity of clusters: " + str(statistics.mean(cluster_averages)) + "\n")
-f.write("median Jaccard similiarity of clusters: " + str(statistics.median(cluster_averages)) + "\n")
+f.write("mean Jaccard similiarity for images in domain B: " + str(statistics.mean(comparison)) + "\n")
+f.write("median Jaccard similiarity for images in domain B: " + str(statistics.median(comparison)) + "\n")
+f.write("mean Jaccard similiarity of clusters in domain B: " + str(statistics.mean(cluster_averages)) + "\n")
+f.write("median Jaccard similiarity of clusters in domain B: " + str(statistics.median(cluster_averages)) + "\n")
 f.write("mean Jaccard similiarity for images (real images in A -fake in B): " + str(statistics.mean(comparison_AB)) + "\n")
 f.write("median Jaccard similiarity for images (real images in A -fake in B): " + str(statistics.median(comparison_AB)) + "\n")
 f.write("mean Jaccard similiarity of clusters (real images in A -fake in B): " + str(statistics.mean(cluster_averages_AB)) + "\n")
 f.write("median Jaccard similiarity of clusters (real images in A -fake in B): " + str(statistics.median(cluster_averages_AB)) + "\n")
 f.write(str(sum) +  " pairs were grouped together out of " + str(int(size/2)) + "\n")
-f.write("There are " + str(len(real_clusters)) + " real image only clusters")
-f.write("There are " + str(len(fake_clusters)) + " fake image only clusters")
-f.write("\nNumber of elements with the same assignment in the fake domain, for each centroid: "+ str(same_el_per_centroid) + "\n")
+f.write("There are " + str(len(real_clusters)) + " real image only clusters\n")
+f.write("There are " + str(len(fake_clusters)) + " fake image only clusters\n")
+f.write("Number of elements with the same assignment in the fake domain, for each centroid: "+ str(same_el_per_centroid) + "\n")
 f.write("Number of elements in each real centroid: "+str(num_el_per_centroid) + "\n")
 f.write("Computed score: "+ str(comparison_2))
-f.close()   
+f.close()  
          
 
 

@@ -1,9 +1,18 @@
 real SOM has 21 clusters
-real SOM has 25 clusters
-real SOM in A has 21 clusters
-combined SOM has 25 clusters
-mean Jaccard similiarity: 0.018518518518518517
-median Jaccard similiarity: 0.0
-mean Jaccard similiarity of clusters: 0.33503401360544216median Jaccard similiarity of clusters: 0.2857142857142857mean Jaccard similiarity for images (real images in A -fake in B): 0.008435525826830175median Jaccard similiarity for images (real images in A -fake in B): 0.0mean Jaccard similiarity of clusters (real images in A -fake in B): 0.2883458646616541median Jaccard similiarity of clusters (real images in A -fake in B): 0.166666666666666662 pairs were grouped together out of 50
-There are 2 real image only clustersThere are 5 fake image only clusters
-Number of elements with the same assignment in the fake domain, for each centroid: [2. 0. 0. 0. 0. 0. 2. 0. 0. 0. 2. 0. 2. 0. 0. 0. 0. 0. 0. 0. 0.]Number of elements in each real centroid: [5. 3. 1. 1. 3. 2. 5. 5. 1. 2. 5. 4. 2. 3. 2. 1. 1. 1. 1. 1. 1.]Computed score: 0.1951219512195122
+fake SOM has 22 clusters
+real SOM in A has 22 clusters
+combined SOM has 24 clusters
+mean Jaccard similiarity for images in domain B: 0.14554204660587639
+median Jaccard similiarity for images in domain B: 0.0
+mean Jaccard similiarity of clusters in domain B: 0.2965986394557823
+median Jaccard similiarity of clusters in domain B: 0.25
+mean Jaccard similiarity for images (real images in A -fake in B): 0.02058333667128812
+median Jaccard similiarity for images (real images in A -fake in B): 0.0
+mean Jaccard similiarity of clusters (real images in A -fake in B): 0.39981306572215664
+median Jaccard similiarity of clusters (real images in A -fake in B): 0.29166666666666663
+27 pairs were grouped together out of 50
+There are 5 real image only clusters
+There are 3 fake image only clusters
+Number of elements with the same assignment in the fake domain, for each centroid: [0. 0. 0. 0. 0. 2. 0. 6. 7. 0. 2. 0. 2. 0. 0. 0. 0. 0. 0. 0. 0.]
+Number of elements in each real centroid: [4. 1. 2. 4. 1. 2. 2. 9. 7. 1. 2. 1. 3. 1. 2. 1. 2. 1. 2. 1. 1.]
+Computed score: 0.4634146341463415
