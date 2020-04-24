@@ -73,7 +73,7 @@ def read_data():
           legend_real_A.append(filename)
          
             
-def real_data(used_dataset): 
+def real_data(used_dataset, i): 
    #dataset: a dataset of real data (from domain A or B)
    #performs SOM on the real data only
    #shows and saves an image of the frequency distribution of nodes being winners
@@ -101,8 +101,8 @@ def real_data(used_dataset):
    plt.pcolor(frequencies.T, cmap='Blues') 
    plt.colorbar()
    
-    
-   name = dataset + "_som_map_real.png"
+   
+   name = dataset + "_som_map_real_" + i + ".png"
    plt.savefig(name)
    
    plt.show()
@@ -414,9 +414,10 @@ pixels = len(fake[1])
 #iteration = 100
 
 #fit real and fake datasets separately
-groups_real, nr, clusters_real  = real_data(real)
+groups_real, nr, clusters_real  = real_data(real, "B")
 groups_fake, nf, clusters_fake  = fake_data()
-groups_real_A, nr_A, clusters_real_A  = real_data(real_A)
+groups_real_A, nr_A, clusters_real_A  = real_data(real_A, "A")
+
 
 
 #perform metrics on the datasets
@@ -462,7 +463,7 @@ cluster_comparison_AB = compare_clusters(clusters_real_A, clusters_fake)
 #print(groups_real)
 print("real SOM in A has "+ str(nr_A) + " clusters\n")
 #print(groups_fake)
-#print("fake SOM in B has "+ str(nf) + " clusters\n")
+print("fake SOM in B has "+ str(nf) + " clusters\n")
 #print(clusters_real)
 #print(clusters_fake)
 #print(comparison)
@@ -523,6 +524,24 @@ print("\nNumber of elements with the same assignment in the fake domain, for eac
 print("Number of elements in each real centroid: "+str(num_el_per_centroid))
 print("Computed score: "+ str(comparison_2))
     
+#FOLLOW UP
+comparison_follow = compare(groups_real, groups_real_A)
+#this meausures how similar are the clusters between the two mappings
+cluster_comparison_follow = compare_clusters(clusters_real, clusters_real_A)
+
+print("real SOM B has "+ str(nr) + " clusters\n")
+print("real SOM A has "+ str(nr_A) + " clusters\n")
+print("mean Jaccard similiarity for images: " + str(statistics.mean(comparison_follow)))
+print("median Jaccard similiarity for images: " + str(statistics.median(comparison_follow)))
+
+#convolute the cluster similiarities
+cluster_averages_follow = []
+for i in range(0, len(cluster_comparison_follow)):
+   cluster_averages_follow.append(max(cluster_comparison_follow[i]))
+   
+print("mean Jaccard similiarity of clusters: " + str(statistics.mean(cluster_averages_follow)))
+print("median Jaccard similiarity of clusters: " + str(statistics.median(cluster_averages_follow)))
+
 
 
 #save results
@@ -545,6 +564,16 @@ f.write("There are " + str(len(fake_clusters)) + " fake image only clusters\n")
 f.write("Number of elements with the same assignment in the fake domain, for each centroid: "+ str(same_el_per_centroid) + "\n")
 f.write("Number of elements in each real centroid: "+str(num_el_per_centroid) + "\n")
 f.write("Computed score: "+ str(comparison_2))
+
+f.write("FOLLOW UP COMPARISON\n\n")
+
+f.write("real SOM B has "+ str(nr) + " clusters\n")
+f.write("real SOM A has "+ str(nr_A) + " clusters\n")
+f.write("mean Jaccard similiarity for images: " + str(statistics.mean(comparison_follow)) + "\n")
+f.write("median Jaccard similiarity for images: " + str(statistics.median(comparison_follow)) + "\n")
+f.write("mean Jaccard similiarity of clusters: " + str(statistics.mean(cluster_averages_follow)) + "\n")
+f.write("median Jaccard similiarity of clusters: " + str(statistics.median(cluster_averages_follow)) + "\n")
+
 f.close()  
          
 
